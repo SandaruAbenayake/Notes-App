@@ -11,7 +11,7 @@ const Profileinfo = ({ onLogout }) => {
 
       {/* Name and logout */}
       <div className="flex flex-col">
-        <p className="text-sm font-medium text-black">William</p>
+        <p className="text-sm font-medium text-black">Sandaru</p>
         <button
           className="text-xs text-slate-700 hover:underline mt-1"
           onClick={onLogout}
