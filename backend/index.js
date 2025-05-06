@@ -94,7 +94,7 @@ app.post("/login", async (req, res) => {
 
     return res.json({
       error: false,
-      message: "Logi Succesful",
+      message: "Login Succesful",
       email,
       accessToken,
     });
@@ -108,6 +108,7 @@ app.post("/login", async (req, res) => {
 
 //Add note
 app.post("/add-note", authenticateToken, async (req, res) => {
+  console.log("ADD NOTE route hit:", req.body);
   const { title, content, tags } = req.body;
   const { user } = req;
 
@@ -143,7 +144,7 @@ app.post("/add-note", authenticateToken, async (req, res) => {
 app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
   const noteId = req.params.noteId;
   const { title, content, tags, isPinned } = req.body;
-  const { user } = req.user;
+  const { user } = req;
 
   if (!title && !content && !tags) {
     return res
@@ -152,13 +153,14 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
   }
 
   try {
-    const note = await Note.findOne({ _id: noteId, userId: user_id });
+    const note = await Note.findOne({ _id: noteId, userId: user._id });
     if (!note) {
       return res.status(404).json({ error: true, message: "Note not Founded" });
     }
     if (title) note.title = title;
-    if (content) note.content = tags;
-    if (tags) note.isPinned;
+    if (content) note.content = content;
+    if (tags) note.tags = tags;
+    if (typeof isPinned === "boolean") note.isPinned = isPinned;
 
     await note.save();
 
@@ -178,18 +180,3 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
 app.listen(5000);
 
 module.exports = app;
-
-// Connect to MongoDB
-// mongoose
-//   .connect(process.env.MONGO_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => console.log("MongoDB connected"))
-//   .catch((err) => console.error("MongoDB connection failed:", err));
-
-// // Start the server
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });

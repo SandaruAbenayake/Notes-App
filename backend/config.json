@@ -1,4 +1,3 @@
 {
-   "connectionString":"mongodb+srv://sandaruabenayake:Sandaru123@mern.2wjc9.mongodb.net/?retryWrites=true&w=majority&appName=MERN"
- 
+  "connectionString": "mongodb://localhost:27017/notesapp"
 }
