@@ -139,6 +139,42 @@ app.post("/add-note", authenticateToken, async (req, res) => {
   }
 });
 
+//Edit Note
+app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
+  const noteId = req.params.noteId;
+  const { title, content, tags, isPinned } = req.body;
+  const { user } = req.user;
+
+  if (!title && !content && !tags) {
+    return res
+      .status(400)
+      .json({ error: true, message: "No changes provided" });
+  }
+
+  try {
+    const note = await Note.findOne({ _id: noteId, userId: user_id });
+    if (!note) {
+      return res.status(404).json({ error: true, message: "Note not Founded" });
+    }
+    if (title) note.title = title;
+    if (content) note.content = tags;
+    if (tags) note.isPinned;
+
+    await note.save();
+
+    return res.json({
+      error: false,
+      note,
+      message: "Note updated successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+});
+
 app.listen(5000);
 
 module.exports = app;
