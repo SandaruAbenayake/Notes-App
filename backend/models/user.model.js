@@ -5,7 +5,7 @@ const usersSchema = new Schema({
   fullName: { type: String },
   email: { type: String },
   password: { type: String },
-  createOn: { type: Date, default: new Date().getTime() },
+  createdOn: { type: Date, default: () => new Date() },
 });
 
 module.exports = mongoose.model("User",usersSchema)
