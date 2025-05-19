@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from "../../components/Inputs/PasswordInput";
 import { validateEmail } from "../../utils/helper";
+import axiosInstance from "../../utils/axiosInstance"; // Make sure this is the correct path
+import { BASE_URL } from "../../utils/constants";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!validateEmail(email)) {
-      setError("Please Enter valid email address");
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -21,10 +25,26 @@ const Login = () => {
       setError("Please enter the password");
       return;
     }
-    setError("")
 
-    // Add your login logic here (e.g., API call)
-  }; // <- This closing brace was missing
+    setError("");
+//login API
+    try {
+      const response = await axiosInstance.post("/login", {
+        email: email,
+        password: password,
+      });
+
+      if (response.data && response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
+        navigate("/dashboard");
+      } else {
+        setError(response.data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Something went wrong");
+    }
+  };
 
   return (
     <>
@@ -55,7 +75,7 @@ const Login = () => {
             </button>
 
             <p className="text-sm text-center mt-4">
-              Not Registered yet?{" "}
+              Not registered yet?{" "}
               <Link to="/signup" className="font-medium text-primary underline">
                 Create an Account
               </Link>

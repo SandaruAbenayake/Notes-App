@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import SearchBar from "../SearchBar/SearchBar";
 
-const Navbar = () => {
+const Navbar = (userIfo) => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
 
   const onLogout = () => {
+    localStorage.clear()
     navigate("/login");
+    
   };
 
   const handleSearch = () => {
@@ -38,7 +40,7 @@ const Navbar = () => {
           onClearSearch={onClearSearch}
         />
 
-        <Profileinfo onLogout={onLogout} />
+        <Profileinfo userInfo={userIfo} onLogout={onLogout} />
       </div>
     </>
   );

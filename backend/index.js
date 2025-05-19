@@ -26,6 +26,8 @@ app.use(
   })
 );
 
+//Back end Done........!!!!!!!!!!!!!!
+
 // Root test route
 app.get("/", (req, res) => {
   res.json({ data: "hello" });
@@ -59,7 +61,7 @@ app.post("/create-account", async (req, res) => {
     await user.save();
 
     const accessToken = jwt.sign({ user: { _id: user._id, email: user.email } }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "3600s",
     });
 
     return res.json({
@@ -112,6 +114,30 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
+//Get User
+app.get("/get-user", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password"); // Hide password
+
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+
+    return res.json({
+      error: false,
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        _id: user._id,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ error: true, message: "Server error" });
+  }
+});
+
+
 // Add Note
 app.post("/add-note", authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body;
@@ -140,6 +166,7 @@ app.post("/add-note", authenticateToken, async (req, res) => {
 });
 
 // Edit Note
+
 app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
   const { noteId } = req.params;
   const { title, content, tags, isPinned } = req.body;
@@ -170,7 +197,7 @@ app.get("/get-all-notes", authenticateToken, async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const notes = await Note.find({ userId }).sort({ isPinned: -1 });
+    const notes = await Note.find().sort({ isPinned: -1 });
 
     return res.json({
       error: false,

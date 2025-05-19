@@ -3,6 +3,7 @@ import Navbar from "../../components/Navbar/Navbar";
 import { Link } from "react-router-dom";
 import PasswordInput from "../../components/Inputs/PasswordInput"; 
 import { validateEmail } from "../../utils/helper";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -28,6 +29,23 @@ const Signup = () => {
     }
     setError("");
     // signup logic API call
+    try {
+      const response = await axiosInstance.post("/create-account", {
+        fullName:name,
+        email: email,
+        password: password,
+      });
+
+      if (response.data && response.data.error) {
+        setError(response.data.message);
+        
+      } else {
+        setError(response.data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (
